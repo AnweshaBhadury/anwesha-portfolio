@@ -1,0 +1,178 @@
+/* ============================================================
+   TransitionSection.module.css
+   Smooth white → dark gradient bridge with scrolling marquee
+   ============================================================ */
+
+/* ── Outer wrapper ── */
+.transition {
+  position: relative;
+  width: 100%;
+  /* Tall enough to feel like a real transition, not a sliver */
+  height: 220px;
+  overflow: hidden;
+  /* Base fill sits mid-gradient */
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f3f0ff 18%,
+    #1a1025 55%,
+    #0a0a0f 100%
+  );
+  /* Pull it flush — no gap between sections */
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Top fade: white hero bleeds down ── */
+.fadeTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Bottom fade: dark about section bleeds up ── */
+.fadeBottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(
+    0deg,
+    #0a0a0f 0%,
+    rgba(10, 10, 15, 0) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Marquee wrapper — sits at the mid-point ── */
+.marqueeWrapper {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 3;
+  /* Slight tilt for modern flair */
+  rotate: -1.2deg;
+  /* Clip the rotated overflow */
+  overflow: hidden;
+}
+
+/* Subtle glow behind the marquee strip */
+.marqueeGlow {
+  position: absolute;
+  inset: -12px 0;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 50%,
+    rgba(124, 58, 237, 0.18) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(8px);
+}
+
+/* The scrolling track */
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  border-top: 1px solid rgba(124, 58, 237, 0.3);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+  background: rgba(10, 10, 15, 0.55);
+  backdrop-filter: blur(4px);
+  padding: 10px 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Each duplicated row scrolls in sync — seamless loop */
+.marqueeInner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+  animation: marqueeScroll 28s linear infinite;
+  will-change: transform;
+}
+
+.marqueeInner:nth-child(2) {
+  animation-delay: -14s;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Individual text items */
+.marqueeItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 28px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(196, 181, 253, 0.75);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+/* Separator dot */
+.marqueeDot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.6);
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.5);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .transition {
+    height: 180px;
+  }
+
+  .marqueeWrapper {
+    rotate: -1deg;
+  }
+
+  .marqueeInner {
+    animation-duration: 20s;
+  }
+
+  .marqueeInner:nth-child(2) {
+    animation-delay: -10s;
+  }
+
+  .marqueeItem {
+    font-size: 0.65rem;
+    padding: 0 20px;
+    letter-spacing: 0.12em;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .marqueeInner {
+    animation: none;
+  }
+  .marqueeTrack {
+    justify-content: center;
+    width: 100%;
+  }
+}
