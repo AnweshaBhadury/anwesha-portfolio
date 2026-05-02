@@ -72,7 +72,7 @@ export default function HeroSection() {
           overflow: hidden;
           font-family: Inter, sans-serif;
 
-          background-image: url("/contacthero.png");
+          background-image: url("/media/images/contacthero.png");
           background-size: cover;
           background-position: center;
         }

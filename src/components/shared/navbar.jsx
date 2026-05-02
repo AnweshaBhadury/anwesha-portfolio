@@ -119,7 +119,7 @@ export default function Navbar() {
     const styleTag = document.createElement("style");
     styleTag.textContent = navStyles;
     document.head.appendChild(styleTag);
-    return () => document.head.removeChild(styleTag);
+    //return () => document.head.removeChild(styleTag);
   }, []);
 
   return (
