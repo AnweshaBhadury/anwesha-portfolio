@@ -121,8 +121,6 @@ export default function Navbar() {
     document.head.appendChild(styleTag);
     //return () => document.head.removeChild(styleTag);
   }, []);
-
-
   return (
     <nav className="nav">
       {/* Logo */}

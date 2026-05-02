@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
@@ -415,7 +416,13 @@ export default function ProjectsSection() {
               <div className="card-inner">
 
                 <div className="card-image">
-                  <img src={project.img} alt={project.title} loading="lazy" />
+                  <Image
+  src={project.img}
+  alt={project.title}
+  width={1200}
+  height={800}
+  className="project-image"
+/>
                   <div
                     className="card-image-overlay"
                     style={{
