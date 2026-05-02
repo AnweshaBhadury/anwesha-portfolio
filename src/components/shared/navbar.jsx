@@ -122,6 +122,7 @@ export default function Navbar() {
     //return () => document.head.removeChild(styleTag);
   }, []);
 
+
   return (
     <nav className="nav">
       {/* Logo */}
