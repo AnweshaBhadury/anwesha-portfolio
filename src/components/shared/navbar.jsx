@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 const navStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -12,9 +14,11 @@ const navStyles = `
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    background: rgba(250,250,250,0.88);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: rgba(13, 13, 26, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   }
 
   .nav-logo {
@@ -26,7 +30,7 @@ const navStyles = `
     align-items: center;
     gap: 2px;
     text-decoration: none;
-    color: #0f0e17;
+    color: #ffffff;
   }
   .nav-logo-dot {
     color: #7c3aed;
@@ -42,7 +46,7 @@ const navStyles = `
   }
   .nav-links a {
     text-decoration: none;
-    color: #0f0e17;
+    color: #e2d9f3;
     font-size: 0.92rem;
     font-weight: 400;
     font-family: 'DM Sans', sans-serif;
@@ -54,11 +58,11 @@ const navStyles = `
     position: absolute;
     bottom: -3px; left: 0;
     width: 0; height: 2px;
-    background: #7c3aed;
+    background: #a855f7;
     border-radius: 2px;
     transition: width 0.25s ease;
   }
-  .nav-links a:hover { color: #7c3aed; }
+  .nav-links a:hover { color: #a855f7; }
   .nav-links a:hover::after { width: 100%; }
 
   .nav-cta {
@@ -70,14 +74,14 @@ const navStyles = `
     font-size: 0.9rem;
     font-family: 'DM Sans', sans-serif;
     text-decoration: none;
-    transition: background 0.2s, transform 0.15s;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   }
   .nav-cta:hover {
     background: #a855f7;
     transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
   }
 
-  /* Mobile */
   .nav-hamburger {
     display: none;
     flex-direction: column;
@@ -91,7 +95,7 @@ const navStyles = `
     display: block;
     width: 24px;
     height: 2px;
-    background: #0f0e17;
+    background: #e2d9f3;
     border-radius: 2px;
     transition: all 0.3s ease;
   }
@@ -102,9 +106,13 @@ const navStyles = `
   }
 `;
 
-const navLinks = ["Home", "About", "Portfolio", "Blog", "Contact"];
-
-import { useEffect } from "react";
+const navLinks = [
+  { label: "Home",      href: "/"          },
+  { label: "About",     href: "#about"     },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Blog",      href: "/blog"      },
+  { label: "Contact",   href: "/contact"   },
+];
 
 export default function Navbar() {
   useEffect(() => {
@@ -124,8 +132,8 @@ export default function Navbar() {
       {/* Links */}
       <ul className="nav-links">
         {navLinks.map((link) => (
-          <li key={link}>
-            <a href="#">{link}</a>
+          <li key={link.label}>
+            <a href={link.href}>{link.label}</a>
           </li>
         ))}
       </ul>
@@ -133,7 +141,7 @@ export default function Navbar() {
       {/* CTA */}
       <a href="#" className="nav-cta">Let us Talk</a>
 
-      {/* Mobile hamburger (visual only — wire up as needed) */}
+      {/* Mobile hamburger */}
       <button className="nav-hamburger" aria-label="Menu">
         <span />
         <span />

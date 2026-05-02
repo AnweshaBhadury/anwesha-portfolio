@@ -305,11 +305,11 @@ const styles = `
 `;
 
 const navLinks = [
-  { label: "Home",      href: "#" },
-  { label: "About",     href: "#" },
-  { label: "Portfolio", href: "#" },
-  { label: "Blog",      href: "#" },
-  { label: "Contact",   href: "#" },
+  { label: "Home", href: "#home" },
+  { label: "About", href: "#about" },
+  { label: "Project", href: "#projects" },
+  { label: "Contact", href: "#contact" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const services = [
@@ -321,18 +321,26 @@ const services = [
 ];
 
 const contact = [
-  { label: "anwesha@email.com",  href: "mailto:anwesha@email.com" },
-  { label: "LinkedIn",           href: "#" },
-  { label: "Dribbble",           href: "#" },
-  { label: "Behance",            href: "#" },
+  {
+    label: "anweshabhadury5@email.com",
+    href: "mailto:anwesha@email.com",
+  },
 ];
 
+/*const contact = [
+  { label: "anweshabhadury5@email.com",  href: "mailto:anwesha@email.com" },
+  { label: "LinkedIn",           href: "https://www.linkedin.com/in/anwesha-bhadury-751376286?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
+  { label: "Github",           href: "https://github.com/AnweshaBhadury" },
+  { label: "Instagram",            href: "" },
+];*/
+
 // Social icons
-const SocialFacebook = () => (
+const SocialGitHub = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58 0-.29-.01-1.06-.02-2.08-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.34-1.77-1.34-1.77-1.09-.75.08-.74.08-.74 1.2.08 1.83 1.23 1.83 1.23 1.07 1.83 2.81 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4 1.02 0 2.04.13 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.6-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.21.69.82.57C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/>
   </svg>
 );
+
 const SocialInstagram = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -347,12 +355,7 @@ const SocialLinkedIn = () => (
     <circle cx="4" cy="4" r="2"/>
   </svg>
 );
-const SocialDribbble = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/>
-  </svg>
-);
+
 
 export default function Footer() {
   const revealRefs = useRef([]);
@@ -413,7 +416,7 @@ export default function Footer() {
             </svg>
             Send a Message
           </a>
-          <a href="#" className="btn-cta-outline">
+          <a href="https://drive.google.com/file/d/1WjVYIB1pdHdRfCGNfZVSaRxkKk9pK7B9/view?usp=drive_link" className="btn-cta-outline">
             View My Resume ↗
           </a>
         </div>
@@ -428,18 +431,17 @@ export default function Footer() {
         {/* Brand */}
         <div className="footer-brand">
           <a href="#" className="footer-logo">
-            EMMY<span className="footer-logo-dot">•</span>
+            ANWESHA<span className="footer-logo-dot">•</span>
           </a>
           <p className="footer-brand-desc">
             A passionate web designer crafting visually stunning and user-friendly
             digital experiences — one pixel at a time.
           </p>
           <div className="footer-socials">
-            <a href="#" className="footer-social" aria-label="Facebook"><SocialFacebook /></a>
+            <a href="#" className="footer-social" aria-label="Facebook"><SocialGitHub /></a>
             <a href="#" className="footer-social" aria-label="Instagram"><SocialInstagram /></a>
             <a href="#" className="footer-social" aria-label="LinkedIn"><SocialLinkedIn /></a>
-            <a href="#" className="footer-social" aria-label="Dribbble"><SocialDribbble /></a>
-          </div>
+                      </div>
           <div className="footer-available">
             <span className="footer-available-dot" />
             Available for freelance

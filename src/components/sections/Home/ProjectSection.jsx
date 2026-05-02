@@ -239,43 +239,53 @@ const styles = `
     .card-image { min-height: 200px; }
   }
 `;
-
 const projects = [
   {
     id: 1,
     number: "01",
-    title: "Brand Identity & Web Design",
-    desc: "A complete visual overhaul for a fintech startup — logo, typography system, and a conversion-focused landing page.",
-    tags: ["Branding", "UI/UX", "Figma"],
+    title: "PII Masking System — Hackathon Winner",
+    desc:
+      "Award-winning web application that detects and masks Personally Identifiable Information (PII) from images and documents in real time using OCR and computer vision techniques.",
+    tags: ["Python", "OpenCV", "EasyOCR", "Streamlit", "AI"],
     color: "#7c3aed",
-    img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&q=80&auto=format&fit=crop",
+    img: "/media/images/pii.png",
+    link: "https://github.com/AnweshaBhadury/INNOVA-PII-MASKING-Hackathon",
   },
+
   {
     id: 2,
     number: "02",
-    title: "E-Commerce Dashboard",
-    desc: "A sleek admin dashboard for an online retailer with real-time analytics, inventory management, and order tracking.",
-    tags: ["React", "Dashboard", "Data Viz"],
+    title: "Institute Management System",
+    desc:
+      "Full-stack system for managing student records, attendance, and academic workflows with structured database operations and user-friendly interfaces.",
+    tags: ["Python", "Database", "CRUD", "System Design"],
     color: "#0ea5e9",
-    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80&auto=format&fit=crop",
+    img: "/media/images/IMS1.png",
+    link: "https://github.com/AnweshaBhadury/Institute_Management_System",
   },
+
   {
     id: 3,
     number: "03",
-    title: "Mobile App — Health & Wellness",
-    desc: "An iOS/Android app prototype for habit tracking and mindfulness with a calm, organic visual language.",
-    tags: ["Mobile", "Prototyping", "UX Research"],
+    title: "Dataset Quality Analyzer",
+    desc:
+      "Tool for evaluating dataset completeness, consistency, and validity with automated checks to improve machine learning data reliability.",
+    tags: ["Python", "Data Analysis", "Pandas", "ML"],
     color: "#10b981",
-    img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80&auto=format&fit=crop",
+    img: "/media/images/DQA1.png",
+    link: "https://github.com/AnweshaBhadury/Dataset-Quality-Analyser",
   },
+
   {
     id: 4,
     number: "04",
-    title: "Portfolio & Blog Platform",
-    desc: "A custom CMS-powered portfolio and blog built for a creative director, with animated transitions and dark mode.",
-    tags: ["Next.js", "CMS", "Animation"],
+    title: "Personal Portfolio Website",
+    desc:
+      "Modern responsive portfolio built using Next.js with animations, project showcase, and contact functionality to present professional work.",
+    tags: ["Next.js", "React", "CSS", "UI/UX"],
     color: "#f59e0b",
-    img: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&q=80&auto=format&fit=crop",
+    img: "/media/images/ppw1.png",
+    link: "#",
   },
 ];
 
@@ -428,7 +438,12 @@ export default function ProjectsSection() {
                     </div>
                   </div>
                   <div className="card-footer">
-                    <a href="#" className="btn-view">
+                    <a
+  href={project.link}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="btn-view"
+>
                       View Project
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14M12 5l7 7-7 7" />
