@@ -48,6 +48,8 @@ const styles = `
     line-height: 1;
   }
   .section-title span { color: #7c3aed; }
+
+  /* ── Stack scene ── */
   .stack-scene {
     position: relative;
     z-index: 1;
@@ -57,9 +59,8 @@ const styles = `
     top: 0;
     height: 100vh;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding-top: 45px;
     overflow: hidden;
     background: #0a0a0f;
   }
@@ -69,7 +70,7 @@ const styles = `
     position: absolute;
     left: 0; right: 0;
     height: 120px;
-    z-index: 10;
+    z-index: 50;
     pointer-events: none;
   }
   .stack-stage::before {
@@ -80,19 +81,22 @@ const styles = `
     bottom: 0;
     background: linear-gradient(to top, #0a0a0f 0%, transparent 100%);
   }
+
+  /* ── Card ── */
   .project-card {
     position: absolute;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px;
+    /* GSAP controls transform/opacity */
     will-change: transform, opacity;
   }
   .card-inner {
     width: 92vw;
-    height: 88vh;
+    max-width: 1240px;
+    height: 82vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
     background: #13111f;
@@ -193,11 +197,13 @@ const styles = `
     font-size: 1rem;
   }
   .card-arrow:hover { border-color: #7c3aed; color: #a855f7; transform: rotate(45deg); }
+
+  /* ── Counter ── */
   .card-counter {
     position: absolute;
     top: 2rem;
     right: 2.5rem;
-    z-index: 20;
+    z-index: 60;
     font-family: 'Syne', sans-serif;
     font-size: 0.78rem;
     font-weight: 700;
@@ -207,9 +213,24 @@ const styles = `
     user-select: none;
   }
   .card-counter em { font-style: normal; color: #7c3aed; }
-  @media (max-width: 640px) {
-    .card-inner { grid-template-columns: 1fr; }
-    .card-image { min-height: 200px; }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .project-card { padding: 18px; }
+    .card-inner {
+      width: 100%;
+      height: auto;
+      min-height: 82vh;
+      grid-template-columns: 1fr;
+      border-radius: 22px;
+    }
+    .card-image { height: 240px; min-height: 240px; }
+    .card-content { padding: 1.5rem 1.3rem 1.4rem; }
+    .card-title { font-size: 1.2rem; }
+    .card-desc { font-size: 0.82rem; margin-bottom: 1.1rem; }
+    .tag { font-size: 0.64rem; padding: 0.2rem 0.55rem; }
+    .btn-view { font-size: 0.76rem; padding: 0.46rem 0.88rem; }
+    .card-counter { top: 1.2rem; right: 1.2rem; font-size: 0.7rem; }
   }
 `;
 
@@ -256,122 +277,97 @@ const projects = [
   },
 ];
 
-function ease(t) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
-
-function lerp(a, b, t) {
-  return a + (b - a) * t;
-}
-
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
-
 export default function ProjectsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const sceneRef = useRef(null);
+  const stageRef = useRef(null);
   const cardRefs = useRef([]);
-  const rafRef = useRef(null);
-  const smoothProgress = useRef(0);
-  const targetProgress = useRef(0);
+  const gsapCtxRef = useRef(null);
 
+  /* ── Inject styles ── */
   useEffect(() => {
-    const styleTag = document.createElement("style");
-    styleTag.textContent = styles;
-    document.head.appendChild(styleTag);
-    return () => document.head.removeChild(styleTag);
+    const tag = document.createElement("style");
+    tag.textContent = styles;
+    document.head.appendChild(tag);
+    return () => document.head.removeChild(tag);
   }, []);
 
+  /* ── GSAP ScrollTrigger setup ── */
   useEffect(() => {
-    const n = projects.length;
-    const LERP_FACTOR = 0.09;
+    let ScrollTriggerLib;
 
-    const applyTransforms = (progress) => {
-      setActiveIndex(Math.min(Math.floor(progress), n - 1));
+    const init = async () => {
+      const gsapMod = await import("gsap");
+      const stMod   = await import("gsap/ScrollTrigger");
+      const gsap    = gsapMod.gsap || gsapMod.default;
+      ScrollTriggerLib = stMod.ScrollTrigger;
+      gsap.registerPlugin(ScrollTriggerLib);
 
-      cardRefs.current.forEach((card, i) => {
-        if (!card) return;
+      const n     = projects.length;
+      const cards = cardRefs.current;
 
-        const isLast = i === n - 1;
+      // ── Hard-set every card's resting state ─────────────────────────
+      // Card 0  → fully visible in the center (the "active" starting card)
+      gsap.set(cards[0], { y: 0, scale: 1, opacity: 1, zIndex: n });
+      // Cards 1…n-1 → waiting below, full size & opacity so reverse looks right
+      for (let i = 1; i < n; i++) {
+        gsap.set(cards[i], { y: "100vh", scale: 1, opacity: 1, zIndex: i });
+      }
 
-        // progress = i means this card is fully settled in view
-        // progress = i+1 means this card should be fully gone (exit complete)
-        // progress = i-0.7 means this card should start entering (overlap starts)
+      // ── One timeline per adjacent pair ──────────────────────────────
+      // Transition i covers scroll range  [i × vh  →  (i+1) × vh]
+      // relative to the top of sceneRef.
+      //
+      // Because we use `fromTo` for BOTH cards in BOTH directions:
+      //   • forward  scroll → entering rises up,  leaving shrinks back
+      //   • backward scroll → GSAP auto-reverses: entering drops back down,
+      //                        leaving grows back to normal  ✓
+      for (let i = 0; i < n - 1; i++) {
+        const leaving  = cards[i];       // currently on screen → goes backward
+        const entering = cards[i + 1];  // waiting below       → comes up
 
-        // ENTER window: progress i-0.7 → i  (card rises while previous is still exiting)
-        const enterStart = i - 0.7;
-        const enterRaw   = clamp((progress - enterStart) / 0.7, 0, 1);
-        const enterT     = ease(enterRaw);
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger:            sceneRef.current,
+            start:              () => `top+=${i * window.innerHeight}px top`,
+            end:                () => `top+=${(i + 1) * window.innerHeight}px top`,
+            scrub:              1,          // lag = 1 s → silky physical feel
+            invalidateOnRefresh: true,      // recomputes px offsets on resize
+            onUpdate: (self) => {
+              // Keep the counter in sync while scrubbing in either direction
+              setActiveIndex(self.progress < 0.5 ? i : i + 1);
+            },
+          },
+        });
 
-        // EXIT window: progress i → i+1  (card shrinks back as next rises)
-        const exitRaw = clamp(progress - i, 0, 1);
-        const exitT   = ease(exitRaw);
+        // ── Phase 1 (first half of scroll): leaving card exits first ─
+        // Shrinks back, slides up, fades out completely.
+        tl.fromTo(
+          leaving,
+          { y: 0,   scale: 1,    opacity: 1, zIndex: n },
+          { y: -60, scale: 0.80, opacity: 0, zIndex: n,
+            ease: "power2.inOut", duration: 1 },
+          0     // starts at timeline position 0
+        );
 
-        let translateY, scale, opacity, zIndex;
+        // ── Phase 2 (second half of scroll): entering card rises ──────
+        // Only begins after leaving card has fully exited.
+        tl.fromTo(
+          entering,
+          { y: "100vh", scale: 1, opacity: 1, zIndex: n + 1 },
+          { y: 0,       scale: 1, opacity: 1, zIndex: n + 1,
+            ease: "power2.out", duration: 1 },
+          1     // starts at timeline position 1 (sequentially after leaving)
+        );
+      }
 
-        if (i === 0 && progress <= 0) {
-          // First card — start fully visible, never enters from below
-          translateY = 0;
-          scale      = 1;
-          opacity    = 1;
-          zIndex     = 1;
-        } else if (progress < enterStart) {
-          // Way below, not yet approaching
-          translateY = 80;
-          scale      = 0.93;
-          opacity    = 0;
-          zIndex     = i;
-        } else if (progress < i) {
-          // ENTERING — rising up while previous card is still visible
-          translateY = lerp(80, 0, enterT);
-          scale      = lerp(0.93, 1, enterT);
-          opacity    = lerp(0, 1, enterT);
-          zIndex     = i + 1; // on top of the exiting card
-        } else if (isLast) {
-          // Last card fully settled — never exits
-          translateY = 0;
-          scale      = 1;
-          opacity    = 1;
-          zIndex     = n + 10;
-        } else {
-          // EXITING — shrinks and fades as the next card rises over it
-          translateY = lerp(0, -25, exitT);
-          scale      = lerp(1, 0.88, exitT);
-          opacity    = lerp(1, 0, clamp(exitRaw / 0.75, 0, 1));
-          zIndex     = n; // behind the incoming card
-        }
-
-        card.style.transform = `translateY(${translateY}px) scale(${scale})`;
-        card.style.opacity   = String(Math.max(0, opacity));
-        card.style.zIndex    = String(zIndex);
-      });
+      ScrollTriggerLib.refresh();
     };
 
-    const tick = () => {
-      const diff = targetProgress.current - smoothProgress.current;
-      smoothProgress.current =
-        Math.abs(diff) < 0.0005
-          ? targetProgress.current
-          : smoothProgress.current + diff * LERP_FACTOR;
-      applyTransforms(smoothProgress.current);
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    const onScroll = () => {
-      if (!sceneRef.current) return;
-      const rect = sceneRef.current.getBoundingClientRect();
-      const vh = window.innerHeight;
-      targetProgress.current = clamp(-rect.top / vh, 0, n - 1);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    rafRef.current = requestAnimationFrame(tick);
+    init();
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (ScrollTriggerLib) ScrollTriggerLib.getAll().forEach((st) => st.kill());
     };
   }, []);
 
@@ -384,12 +380,17 @@ export default function ProjectsSection() {
         </h2>
       </div>
 
+      {/*
+        The scene is (n × 100vh) tall — as the user scrolls through it,
+        the sticky stage pins to the viewport and GSAP scrubs the transitions.
+      */}
       <div
         className="stack-scene"
         ref={sceneRef}
         style={{ height: `${projects.length * 100}vh` }}
       >
-        <div className="stack-stage">
+        <div className="stack-stage" ref={stageRef}>
+          {/* Floating counter */}
           <div className="card-counter">
             <em>{String(activeIndex + 1).padStart(2, "0")}</em>
             &thinsp;/&thinsp;
@@ -403,6 +404,7 @@ export default function ProjectsSection() {
               ref={(el) => (cardRefs.current[i] = el)}
             >
               <div className="card-inner">
+                {/* Image */}
                 <div className="card-image">
                   <img src={project.img} alt={project.title} />
                   <div
@@ -413,6 +415,7 @@ export default function ProjectsSection() {
                   />
                 </div>
 
+                {/* Content */}
                 <div className="card-content">
                   <div>
                     <p className="card-number" style={{ color: project.color }}>

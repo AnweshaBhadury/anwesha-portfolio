@@ -309,7 +309,7 @@ const navLinks = [
   { label: "About", href: "#about" },
   { label: "Project", href: "#projects" },
   { label: "Contact", href: "#contact" },
-  { label: "Blog", href: "/blog" },
+  //{ label: "Blog", href: "/blog" },
 ];
 
 const services = [
@@ -416,9 +416,14 @@ export default function Footer() {
             </svg>
             Send a Message
           </a>
-          <a href="https://drive.google.com/file/d/1WjVYIB1pdHdRfCGNfZVSaRxkKk9pK7B9/view?usp=drive_link" className="btn-cta-outline">
-            View My Resume ↗
-          </a>
+          <a
+            href="https://drive.google.com/file/d/1WjVYIB1pdHdRfCGNfZVSaRxkKk9pK7B9/view?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-cta-outline"
+          >
+          View My Resume ↗
+        </a>
         </div>
       </div>
 
