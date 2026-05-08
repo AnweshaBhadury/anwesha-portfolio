@@ -32,12 +32,17 @@
   position: relative;
   background: #0a0a0f !important;
   background-color: #0a0a0f !important;
-  min-height: 100vh;
-  padding: 6rem 1.5rem 8rem;
+
+  padding: 6rem 1.5rem 0rem;
+
   overflow: hidden;
+
   font-family: var(--font-body);
+
   color: #ffffff !important;
+
   color-scheme: dark;
+
   isolation: isolate;
 }
 
@@ -215,10 +220,11 @@
 ───────────────────────────────────────────── */
 .timelineWrapper {
   position: relative;
-  margin-bottom: 5rem;
-  padding: 0 0 1rem;
-}
 
+  margin-bottom: 1rem;
+
+  padding: 0;
+}
 /* Glowing vertical line */
 .timelineLine {
   position: absolute;
