@@ -294,80 +294,92 @@ export default function ProjectsSection() {
 
   /* ── GSAP ScrollTrigger setup ── */
   useEffect(() => {
-    let ScrollTriggerLib;
+    let gsap, ScrollTrigger;
 
     const init = async () => {
+      // Dynamically import GSAP so it works in Next.js SSR environments
       const gsapMod = await import("gsap");
-      const stMod   = await import("gsap/ScrollTrigger");
-      const gsap    = gsapMod.gsap || gsapMod.default;
-      ScrollTriggerLib = stMod.ScrollTrigger;
-      gsap.registerPlugin(ScrollTriggerLib);
+      const stMod = await import("gsap/ScrollTrigger");
+      gsap = gsapMod.gsap || gsapMod.default;
+      ScrollTrigger = stMod.ScrollTrigger;
+      gsap.registerPlugin(ScrollTrigger);
 
-      const n     = projects.length;
+      const n = projects.length;
       const cards = cardRefs.current;
 
-      // ── Hard-set every card's resting state ─────────────────────────
-      // Card 0  → fully visible in the center (the "active" starting card)
+      // ── Initial states ──────────────────────────────────────────────
+      // Card 0: fully visible, centered
       gsap.set(cards[0], { y: 0, scale: 1, opacity: 1, zIndex: n });
-      // Cards 1…n-1 → waiting below, full size & opacity so reverse looks right
+
+      // Cards 1…n-1: waiting below the viewport
       for (let i = 1; i < n; i++) {
         gsap.set(cards[i], { y: "100vh", scale: 1, opacity: 1, zIndex: i });
       }
 
-      // ── One timeline per adjacent pair ──────────────────────────────
-      // Transition i covers scroll range  [i × vh  →  (i+1) × vh]
-      // relative to the top of sceneRef.
+      // ── Per-transition ScrollTriggers ───────────────────────────────
+      // Each transition occupies one "viewport height" of scroll.
+      // The sticky container is `n` viewports tall; first vh = header scroll-in,
+      // transitions occupy vh 1 … n-1.
       //
-      // Because we use `fromTo` for BOTH cards in BOTH directions:
-      //   • forward  scroll → entering rises up,  leaving shrinks back
-      //   • backward scroll → GSAP auto-reverses: entering drops back down,
-      //                        leaving grows back to normal  ✓
+      // sceneRef starts at the top of the sticky block.
+      // transition i  (0→1, 1→2, …)  fires when scroll offset = i × 100vh.
+
       for (let i = 0; i < n - 1; i++) {
-        const leaving  = cards[i];       // currently on screen → goes backward
-        const entering = cards[i + 1];  // waiting below       → comes up
+        const leaving = cards[i];   // goes backward (scale down + fade)
+        const entering = cards[i + 1]; // comes up from below
 
         const tl = gsap.timeline({
           scrollTrigger: {
-            trigger:            sceneRef.current,
-            start:              () => `top+=${i * window.innerHeight}px top`,
-            end:                () => `top+=${(i + 1) * window.innerHeight}px top`,
-            scrub:              1,          // lag = 1 s → silky physical feel
-            invalidateOnRefresh: true,      // recomputes px offsets on resize
-            onUpdate: (self) => {
-              // Keep the counter in sync while scrubbing in either direction
-              setActiveIndex(self.progress < 0.5 ? i : i + 1);
-            },
+            trigger: sceneRef.current,
+            // Each transition spans exactly one viewport height.
+            // The scene starts after the section-header (~100px),
+            // so offset by (i * 100vh) from scene top.
+            start: () => `top+=${i * window.innerHeight}px top`,
+            end:   () => `top+=${(i + 1) * window.innerHeight}px top`,
+            scrub: 1.2,            // silky smooth scrubbing
+            onEnter:      () => setActiveIndex(i + 1),
+            onEnterBack:  () => setActiveIndex(i),
           },
         });
 
-        // ── Phase 1 (first half of scroll): leaving card exits first ─
-        // Shrinks back, slides up, fades out completely.
-        tl.fromTo(
-          leaving,
-          { y: 0,   scale: 1,    opacity: 1, zIndex: n },
-          { y: -60, scale: 0.80, opacity: 0, zIndex: n,
-            ease: "power2.inOut", duration: 1 },
-          0     // starts at timeline position 0
-        );
-
-        // ── Phase 2 (second half of scroll): entering card rises ──────
-        // Only begins after leaving card has fully exited.
+        // ── Entering card: rise from below → center ──────────────────
         tl.fromTo(
           entering,
-          { y: "100vh", scale: 1, opacity: 1, zIndex: n + 1 },
-          { y: 0,       scale: 1, opacity: 1, zIndex: n + 1,
-            ease: "power2.out", duration: 1 },
-          1     // starts at timeline position 1 (sequentially after leaving)
+          { y: "100vh", zIndex: n + 1 },
+          {
+            y: 0,
+            zIndex: n + 1,
+            ease: "power2.out",
+            duration: 1,
+          },
+          0           // start at scrub progress = 0
+        );
+
+        // ── Leaving card: scale back + fade out ───────────────────────
+        tl.to(
+          leaving,
+          {
+            scale: 0.84,
+            opacity: 0,
+            y: -40,
+            zIndex: n,
+            ease: "power2.inOut",
+            duration: 1,
+          },
+          0           // run simultaneously
         );
       }
 
-      ScrollTriggerLib.refresh();
+      ScrollTrigger.refresh();
     };
 
     init();
 
     return () => {
-      if (ScrollTriggerLib) ScrollTriggerLib.getAll().forEach((st) => st.kill());
+      // Kill all ScrollTriggers created for this component
+      if (ScrollTrigger) {
+        ScrollTrigger.getAll().forEach((st) => st.kill());
+      }
     };
   }, []);
 
