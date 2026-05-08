@@ -17,7 +17,7 @@
 
   z-index: 100;
 
-  background: rgba(13, 13, 26,0.72);
+  background: rgba(13, 13, 26,0.76);
 
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
@@ -190,7 +190,10 @@
   right: -100%;
 
   width: 280px;
-  height: 100vh;
+
+  /* Use dvh so the browser chrome on mobile doesn't clip the bottom */
+  height: 100dvh;
+  height: 100vh; /* fallback for older browsers */
 
   background: rgba(10, 10, 18, 0.96);
 
@@ -201,10 +204,15 @@
 
   z-index: 200;
 
-  padding: 2rem 1.5rem;
+  /* Padding top/sides only — bottom handled by mobileCta margin */
+  padding: 2rem 1.5rem 0 1.5rem;
 
   display: flex;
   flex-direction: column;
+
+  /* Allow scrolling if content overflows on very small screens */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   transition:
     right 0.4s cubic-bezier(0.22,1,0.36,1);
@@ -220,6 +228,9 @@
   justify-content: space-between;
 
   margin-bottom: 3rem;
+
+  /* Prevent header from shrinking */
+  flex-shrink: 0;
 }
 
 .mobileLogo {
@@ -249,6 +260,10 @@
   flex-direction: column;
 
   gap: 1.5rem;
+
+  /* Allow links area to scroll if needed, CTA stays pinned */
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .mobileLinks a {
@@ -266,7 +281,11 @@
 }
 
 .mobileCta {
+  /* Push to bottom but never go off screen */
   margin-top: auto;
+
+  /* Prevent it from being squished */
+  flex-shrink: 0;
 
   background: #7c3aed;
 
@@ -281,6 +300,9 @@
   text-decoration: none;
 
   font-weight: 500;
+
+  /* Space below CTA — respects iPhone home bar */
+  margin-bottom: max(1.5rem, env(safe-area-inset-bottom));
 }
 
 /* BACKDROP */
