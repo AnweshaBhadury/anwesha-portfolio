@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Anwesha Bhadury",
 
+  verification: {
+    google: "3Z_ienpUl4dshA4p4h_vYJWA-S-Cc8y-ISvxiQtZitc",
+  },
+
+
   description:
     "Portfolio website of Anwesha Bhadury — Computer Science student passionate about AI, Machine Learning, intelligent systems, modern web applications, and impactful digital experiences.",
 
