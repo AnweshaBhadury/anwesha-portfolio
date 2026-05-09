@@ -242,7 +242,7 @@ const projects = [
     desc: "Award-winning web application that detects and masks Personally Identifiable Information (PII) from images and documents in real time using OCR and computer vision techniques.",
     tags: ["Python", "OpenCV", "EasyOCR", "Streamlit", "AI"],
     color: "#7c3aed",
-    img: "/media/images/pii.png",
+    img: "/media/images/pii.webp",
     link: "https://github.com/AnweshaBhadury/INNOVA-PII-MASKING-Hackathon",
   },
   {
@@ -252,7 +252,7 @@ const projects = [
     desc: "Full-stack system for managing student records, attendance, and academic workflows with structured database operations and user-friendly interfaces.",
     tags: ["Python", "Database", "CRUD", "System Design"],
     color: "#0ea5e9",
-    img: "/media/images/IMS1.png",
+    img: "/media/images/IMS1.webp",
     link: "https://github.com/AnweshaBhadury/Institute_Management_System",
   },
   {
@@ -262,7 +262,7 @@ const projects = [
     desc: "Tool for evaluating dataset completeness, consistency, and validity with automated checks to improve machine learning data reliability.",
     tags: ["Python", "Data Analysis", "Pandas", "ML"],
     color: "#10b981",
-    img: "/media/images/DQA1.png",
+    img: "/media/images/DQA1.webp",
     link: "https://github.com/AnweshaBhadury/Dataset-Quality-Analyser",
   },
   {
@@ -272,7 +272,7 @@ const projects = [
     desc: "Modern responsive portfolio built using Next.js with animations, project showcase, and contact functionality to present professional work.",
     tags: ["Next.js", "React", "CSS", "UI/UX"],
     color: "#f59e0b",
-    img: "/media/images/ppw1.png",
+    img: "/media/images/ppw1.webp",
     link: "#",
   },
 ];
